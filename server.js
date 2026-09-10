@@ -4,13 +4,14 @@ const OpenAI = require("openai");
 require("dotenv").config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
 app.use(cors());
+app.use(express.static(__dirname));
 app.use(express.json({ limit: "20mb" }));
 
 // Server test
