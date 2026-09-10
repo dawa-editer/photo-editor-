@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Photo AI Editor.com</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0b0d12;
+    color:white;
+    min-height:100vh;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* HEADER */
+
+.header{
+    height:70px;
+    background:#11141c;
+    border-bottom:1px solid #292d38;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#8b5cf6;
+}
+
+.header-right{
+    display:flex;
+    gap:8px;
+}
+
+.top-btn{
+    background:#202532;
+    color:white;
+    border:1px solid #343a49;
+    border-radius:8px;
+    padding:9px 13px;
+}
+
+.top-btn:hover{
+    background:#303746;
+}
+
+/* MAIN */
+
+.app{
+    display:grid;
+    grid-template-columns:230px 1fr 270px;
+    min-height:calc(100vh - 70px);
+}
+
+/* LEFT */
+
+.left-panel{
+    background:#11141c;
+    border-right:1px solid #292d38;
+    padding:15px;
+    overflow-y:auto;
+}
+
+.section-title{
+    font-size:12px;
+    color:#9299aa;
+    margin:15px 0 8px;
+    text-transform:uppercase;
+}
+
+.tool-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.tool{
+    border:1px solid #303644;
+    background:#191d27;
+    color:white;
+    border-radius:9px;
+    padding:12px 5px;
+    min-height:65px;
+    transition:.2s;
+}
+
+.tool:hover{
+    background:#292f3d;
+    transform:translateY(-1px);
+}
+
+.tool .icon{
+    font-size:20px;
+    display:block;
+    margin-bottom:5px;
+}
+
+.tool span{
+    font-size:11px;
+}
+
+/* CENTER */
+
+.workspace{
+    min-width:0;
+    background:#080a0f;
+    display:flex;
+    flex-direction:column;
+}
+
+.workspace-top{
+    min-height:55px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border-bottom:1px solid #242834;
+}
+
+.workspace-btn{
+    background:#181c26;
+    border:1px solid #303644;
+    color:white;
+    padding:8px 12px;
+    border-radius:7px;
+}
+
+.workspace-btn:hover{
+    background:#2a3040;
+}
+
+.canvas-area{
+    flex:1;
+    min-height:430px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:25px;
+    overflow:auto;
+}
+
+.canvas-box{
+    width:min(800px,90%);
+    min-height:400px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        linear-gradient(45deg,#151922 25%,transparent 25%),
+        linear-gradient(-45deg,#151922 25%,transparent 25%),
+        linear-gradient(45deg,transparent 75%,#151922 75%),
+        linear-gradient(-45deg,transparent 75%,#151922 75%);
+    background-size:30px 30px;
+    background-position:0 0,0 15px,15px -15px,-15px 0;
+    border:1px solid #303541;
+    border-radius:12px;
+    overflow:hidden;
+    position:relative;
+}
+
+#photoCanvas{
+    max-width:100%;
+    max-height:70vh;
+    display:none;
+    box-shadow:0 10px 40px #000;
+}
+
+#videoPreview{
+    max-width:100%;
+    max-height:70vh;
+    display:none;
+    background:#000;
+}
+
+/* EMPTY */
+
+.empty{
+    text-align:center;
+    color:#8991a3;
+}
+
+.empty .big{
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+.upload-main{
+    background:#7c3aed;
+    color:white;
+    border:0;
+    padding:13px 25px;
+    border-radius:9px;
+    margin-top:15px;
+}
+
+.upload-main:hover{
+    background:#6d28d9;
+}
+
+/* TIMELINE */
+
+.timeline{
+    background:#10131b;
+    border-top:1px solid #292d38;
+    padding:12px;
+}
+
+.timeline-title{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+    font-size:13px;
+}
+
+.track{
+    height:55px;
+    background:#191d27;
+    border:1px solid #303644;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    padding:5px;
+    overflow:hidden;
+}
+
+.track-video{
+    height:42px;
+    background:linear-gradient(90deg,#7c3aed,#2563eb);
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    min-width:180px;
+}
+
+.track-audio{
+    height:42px;
+    background:linear-gradient(90deg,#059669,#14b8a6);
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    margin-left:8px;
+    min-width:150px;
+}
+
+/* RIGHT */
+
+.right-panel{
+    background:#11141c;
+    border-left:1px solid #292d38;
+    padding:15px;
+    overflow-y:auto;
+}
+
+.panel{
+    background:#181c25;
+    border:1px solid #303644;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
+}
+
+.panel h3{
+    font-size:14px;
+    margin-bottom:12px;
+}
+
+.control{
+    margin-bottom:13px;
+}
+
+.control label{
+    display:flex;
+    justify-content:space-between;
+    color:#aab1c0;
+    font-size:12px;
+    margin-bottom:6px;
+}
+
+input[type="range"]{
+    width:100%;
+}
+
+select,
+.text-input{
+    width:100%;
+    background:#10131a;
+    color:white;
+    border:1px solid #353b4a;
+    border-radius:7px;
+    padding:9px;
+}
+
+.action{
+    width:100%;
+    border:0;
+    border-radius:8px;
+    padding:10px;
+    background:#252b38;
+    color:white;
+    margin-bottom:7px;
+}
+
+.action:hover{
+    background:#343c4d;
+}
+
+.primary{
+    background:#7c3aed;
+}
+
+.primary:hover{
+    background:#6d28d9;
+}
+
+/* VIDEO CONTROLS */
+
+.video-controls{
+    display:none;
+}
+
+.music-info{
+    color:#aab1c0;
+    font-size:12px;
+    line-height:1.5;
+    margin-top:7px;
+}
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    background:#171b24;
+    border:1px solid #343a49;
+    border-radius:14px;
+    width:100%;
+    max-width:450px;
+    padding:20px;
+}
+
+.modal-box h2{
+    margin-bottom:15px;
+}
+
+.close{
+    float:right;
+    background:#292f3c;
+    color:white;
+    border:0;
+    padding:5px 9px;
+    border-radius:6px;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#202633;
+    border:1px solid #3b4353;
+    padding:12px 17px;
+    border-radius:9px;
+    display:none;
+    z-index:200;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .app{
+        grid-template-columns:75px 1fr;
+    }
+
+    .right-panel{
+        display:none;
+    }
+
+    .left-panel{
+        padding:8px;
+    }
+
+    .tool-grid{
+        grid-template-columns:1fr;
+    }
+
+    .tool{
+        padding:8px 2px;
+        min-height:58px;
+    }
+
+    .tool span{
+        display:none;
+    }
+
+    .tool .icon{
+        margin:0;
+    }
+}
+
+@media(max-width:600px){
+
+    .header{
+        height:60px;
+        padding:0 10px;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .top-btn{
+        padding:7px;
+        font-size:11px;
+    }
+
+    .app{
+        grid-template-columns:65px 1fr;
+    }
+
+    .canvas-area{
+        min-height:330px;
+        padding:10px;
+    }
+
+    .workspace-top{
+        overflow-x:auto;
+        justify-content:flex-start;
+    }
+
+    .workspace-btn{
+        white-space:nowrap;
+        font-size:11px;
+    }
+
+    .timeline{
+        padding:8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+
+    <div class="logo">
+        Photo <span>AI</span> Editor.com
+    </div>
+
+    <div class="header-right">
+        <button class="top-btn" onclick="undo()">↶ Undo</button>
+        <button class="top-btn" onclick="redo()">↷ Redo</button>
+        <button class="top-btn" onclick="saveProject()">💾 Save</button>
+        <button class="top-btn" onclick="exportImage()">⬇ Export</button>
+    </div>
+
+</header>
+
+
+<div class="app">
+
+<!-- LEFT TOOLBAR -->
+
+<aside class="left-panel">
+
+    <div class="section-title">Media</div>
+
+    <div class="tool-grid">
+
+        <button class="tool" onclick="openPhoto()">
+            <span class="icon">🖼️</span>
+            <span>Photo</span>
+        </button>
+
+        <button class="tool" onclick="openVideo()">
+            <span class="icon">🎬</span>
+            <span>Video</span>
+        </button>
+
+        <button class="tool" onclick="openMusic()">
+            <span class="icon">🎵</span>
+            <span>Music</span>
+        </button>
+
+    </div>
+
+
+    <div class="section-title">AI Tools</div>
+
+    <div class="tool-grid">
+
+        <button class="tool" onclick="aiEnhance()">
+            <span class="icon">✨</span>
+            <span>AI Enhance</span>
+        </button>
+
+        <button class="tool" onclick="removeBackground()">
+            <span class="icon">✂️</span>
+            <span>Remove BG</span>
+        </button>
+
+        <button class="tool" onclick="objectEraser()">
+            <span class="icon">🪄</span>
+            <span>Object Eraser</span>
+        </button>
+
+        <button class="tool" onclick="aiUpscale()">
+            <span class="icon">🔍</span>
+            <span>AI Upscale</span>
+        </button>
+
+    </div>
+
+
+    <div class="section-title">Edit</div>
+
+    <div class="tool-grid">
+
+        <button class="tool" onclick="rotatePhoto()">
+            <span class="icon">🔄</span>
+            <span>Rotate</span>
+        </button>
+
+        <button class="tool" onclick="flipPhoto()">
+            <span class="icon">↔️</span>
+            <span>Flip</span>
+        </button>
+
+        <button class="tool" onclick="addText()">
+            <span class="icon">T</span>
+            <span>Text</span>
+        </button>
+
+        <button class="tool" onclick="addSticker()">
+            <span class="icon">😀</span>
+            <span>Sticker</span>
+        </button>
+
+    </div>
+
+
+    <div class="section-title">Video</div>
+
+    <div class="tool-grid">
+
+        <button class="tool" onclick="playVideo()">
+            <span class="icon">▶️</span>
+            <span>Play</span>
+        </button>
+
+        <button class="tool" onclick="pauseVideo()">
+            <span class="icon">⏸️</span>
+            <span>Pause</span>
+        </button>
+
+        <button class="tool" onclick="muteVideo()">
+            <span class="icon">🔇</span>
+            <span>Mute</span>
+        </button>
+
+        <button class="tool" onclick="videoTrimInfo()">
+            <span class="icon">✂️</span>
+            <span>Trim</span>
+        </button>
+
+    </div>
+
+
+    <div class="section-title">Export</div>
+
+    <button class="action primary" onclick="exportImage()">
+        ⬇ Export Photo
+    </button>
+
+</aside>
+
+
+<!-- CENTER WORKSPACE -->
+
+<main class="workspace">
+
+    <div class="workspace-top">
+
+        <button class="workspace-btn" onclick="setMode('photo')">
+            🖼️ Photo Mode
+        </button>
+
+        <button class="workspace-btn" onclick="setMode('video')">
+            🎬 Video Mode
+        </button>
+
+        <button class="workspace-btn" onclick="zoomOut()">
+            −
+        </button>
+
+        <span id="zoomText">100%</span>
+
+        <button class="workspace-btn" onclick="zoomIn()">
+            +
+        </button>
+
+    </div>
+
+
+    <div class="canvas-area">
+
+        <div class="canvas-box">
+
+            <div class="empty" id="emptyState">
+
+                <div class="big">📸</div>
+
+                <h2>Start Creating</h2>
+
+                <p style="margin-top:8px;">
+                    Photo या Video upload करें
+                </p>
+
+                <button
+                    class="upload-main"
+                    onclick="openMedia()">
+                    Upload Media
+                </button>
+
+            </div>
+
+            <canvas id="photoCanvas"></canvas>
+
+            <video
+                id="videoPreview"
+                controls>
+            </video>
+
+        </div>
+
+    </div>
+
+
+    <!-- TIMELINE -->
+
+    <div class="timeline">
+
+        <div class="timeline-title">
+
+            <span>🎬 Timeline</span>
+
+            <span id="durationText">
+                00:00
+            </span>
+
+        </div>
+
+        <div class="track">
+
+            <div
+                class="track-video"
+                id="videoTrack">
+                🎬 Video
+            </div>
+
+            <div
+                class="track-audio"
+                id="audioTrack"
+                style="display:none;">
+                🎵 Music
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- RIGHT PANEL -->
+
+<aside class="right-panel">
+
+
+    <!-- ADJUSTMENTS -->
+
+    <div class="panel">
+
+        <h3>🎨 Adjustments</h3>
+
+        <div class="control">
+
+            <label>
+                Brightness
+                <span id="brightnessValue">0</span>
+            </label>
+
+            <input
+                type="range"
+                id="brightness"
+                min="-100"
+                max="100"
+                value="0"
+                oninput="updateImage()">
+
+        </div>
+
+
+        <div class="control">
+
+            <label>
+                Contrast
+                <span id="contrastValue">0</span>
+            </label>
+
+            <input
+                type="range"
+                id="contrast"
+                min="-100"
+                max="100"
+                value="0"
+                oninput="updateImage()">
+
+        </div>
+
+
+        <div class="control">
+
+            <label>
+                Saturation
+                <span id="saturationValue">0</span>
+            </label>
+
+            <input
+                type="range"
+                id="saturation"
+                min="-100"
+                max="100"
+                value="0"
+                oninput="updateImage()">
+
+        </div>
+
+
+        <div class="control">
+
+            <label>Blur</label>
+
+            <input
+                type="range"
+                id="blur"
+                min="0"
+                max="10"
+                value="0"
+                oninput="updateImage()">
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="panel">
+
+        <h3>🎨 Filters</h3>
+
+        <select id="filter" onchange="updateImage()">
+
+            <option value="none">Original</option>
+            <option value="grayscale(1)">B&W</option>
+            <option value="sepia(1)">Sepia</option>
+            <option value="contrast(1.3)">Dramatic</option>
+            <option value="saturate(1.5)">Vibrant</option>
+            <option value="brightness(1.2)">Bright</option>
+            <option value="contrast(.8)">Soft</option>
+
+        </select>
+
+    </div>
+
+
+    <!-- VIDEO -->
+
+    <div class="panel">
+
+        <h3>🎬 Video Settings</h3>
+
+        <div class="control">
+
+            <label>Video Volume</label>
+
+            <input
+                type="range"
+                id="videoVolume"
+                min="0"
+                max="1"
+                step=".01"
+                value="1"
+                oninput="changeVolume()">
+
+        </div>
+
+
+        <button
+            class="action"
+            onclick="playVideo()">
+            ▶ Play
+        </button>
+
+        <button
+            class="action"
+            onclick="pauseVideo()">
+            ⏸ Pause
+        </button>
+
+        <button
+            class="action"
+            onclick="muteVideo()">
+            🔇 Mute Original Audio
+        </button>
+
+    </div>
+
+
+    <!-- MUSIC -->
+
+    <div class="panel">
+
+        <h3>🎵 Music</h3>
+
+        <button
+            class="action primary"
+            onclick="openMusic()">
+            + Add Music
+        </button>
+
+        <div class="music-info" id="musicInfo">
+            अभी कोई music नहीं जोड़ा गया।
+        </div>
+
+        <div class="control" style="margin-top:12px;">
+
+            <label>Music Volume</label>
+
+            <input
+                type="range"
+                id="musicVolume"
+                min="0"
+                max="1"
+                step=".01"
+                value="1"
+                oninput="changeMusicVolume()">
+
+        </div>
+
+    </div>
+
+
+    <!-- TEXT -->
+
+    <div class="panel">
+
+        <h3>📝 Text</h3>
+
+        <input
+            class="text-input"
+            id="textInput"
+            placeholder="अपना text लिखें">
+
+        <button
+            class="action primary"
+            style="margin-top:8px;"
+            onclick="addText()">
+            + Add Text
+        </button>
+
+    </div>
+
+
+    <!-- CANVAS -->
+
+    <div class="panel">
+
+        <h3>📱 Canvas Size</h3>
+
+        <select onchange="changeCanvasSize(this.value)">
+
+            <option value="original">Original</option>
+            <option value="1080x1920">Reel / Shorts 9:16</option>
+            <option value="1920x1080">YouTube 16:9</option>
+            <option value="1080x1080">Square 1:1</option>
+            <option value="1080x1350">Instagram 4:5</option>
+
+        </select>
+
+    </div>
+
+
+    <!-- EXPORT -->
+
+    <div class="panel">
+
+        <h3>💾 Export</h3>
+
+        <button
+            class="action primary"
+            onclick="exportImage()">
+            Download PNG
+        </button>
+
+        <button
+            class="action"
+            onclick="exportJPG()">
+            Download JPG
+        </button>
+
+    </div>
+
+</aside>
+
+</div>
+
+
+<!-- HIDDEN FILE INPUTS -->
+
+<input
+    type="file"
+    id="photoInput"
+    accept="image/*"
+    hidden>
+
+<input
+    type="file"
+    id="videoInput"
+    accept="video/*"
+    hidden>
+
+<input
+    type="file"
+    id="musicInput"
+    accept="audio/*"
+    hidden>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="infoModal">
+
+    <div class="modal-box">
+
+        <button
+            class="close"
+            onclick="closeModal()">
+            ✕
+        </button>
+
+        <h2 id="modalTitle">
+            Information
+        </h2>
+
+        <p
+            id="modalText"
+            style="color:#adb4c3;line-height:1.6;">
+        </p>
+
+        <button
+            class="action primary"
+            style="margin-top:15px;"
+            onclick="closeModal()">
+            OK
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast">
+    Done
+</div>
+
+
+<script>
+
+/* =========================
+   GLOBAL VARIABLES
+========================= */
+
+let currentMode = "photo";
+
+let image = new Image();
+
+let photoLoaded = false;
+
+let rotation = 0;
+
+let flipped = false;
+
+let zoom = 1;
+
+let history = [];
+
+let historyIndex = -1;
+
+let videoURL = "";
+
+let musicURL = "";
+
+let musicAudio = new Audio();
+
+
+const canvas =
+document.getElementById("photoCanvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const video =
+document.getElementById("videoPreview");
+
+
+/* =========================
+   FILE INPUTS
+========================= */
+
+document
+.getElementById("photoInput")
+.addEventListener("change", function(e){
+
+    const file = e.target.files[0];
+
+    if(!file) return;
+
+    const url =
+    URL.createObjectURL(file);
+
+    image.onload = function(){
+
+        photoLoaded = true;
+
+        currentMode = "photo";
+
+        canvas.width = image.width;
+
+        canvas.height = image.height;
+
+        canvas.style.display = "block";
+
+        video.style.display = "none";
+
+        document
+        .getElementById("emptyState")
+        .style.display = "none";
+
+        drawImage();
+
+        saveHistory();
+
+        showToast("Photo uploaded");
+
+    };
+
+    image.src = url;
+
+});
+
+
+document
+.getElementById("videoInput")
+.addEventListener("change", function(e){
+
+    const file = e.target.files[0];
+
+    if(!file) return;
+
+    videoURL =
+    URL.createObjectURL(file);
+
+    video.src = videoURL;
+
+    video.style.display = "block";
+
+    canvas.style.display = "none";
+
+    document
+    .getElementById("emptyState")
+    .style.display = "none";
+
+    currentMode = "video";
+
+    video.onloadedmetadata = function(){
+
+        document
+        .getElementById("durationText")
+        .textContent =
+        formatTime(video.duration);
+
+    };
+
+    showToast("Video uploaded");
+
+});
+
+
+document
+.getElementById("musicInput")
+.addEventListener("change", function(e){
+
+    const file = e.target.files[0];
+
+    if(!file) return;
+
+    musicURL =
+    URL.createObjectURL(file);
+
+    musicAudio.src = musicURL;
+
+    musicAudio.loop = true;
+
+    document
+    .getElementById("musicInfo")
+    .textContent =
+    "🎵 " + file.name;
+
+    document
+    .getElementById("audioTrack")
+    .style.display = "flex";
+
+    showToast("Music added");
+
+});
+
+
+/* =========================
+   OPEN FILES
+========================= */
+
+function openPhoto(){
+
+    document
+    .getElementById("photoInput")
+    .click();
+
+}
+
+
+function openVideo(){
+
+    document
+    .getElementById("videoInput")
+    .click();
+
+}
+
+
+function openMusic(){
+
+    document
+    .getElementById("musicInput")
+    .click();
+
+}
+
+
+function openMedia(){
+
+    openPhoto();
+
+}
+
+
+/* =========================
+   PHOTO DRAW
+========================= */
+
+function drawImage(){
+
+    if(!photoLoaded) return;
+
+    const brightness =
+    Number(
+        document
+        .getElementById("brightness")
+        .value
+    );
+
+    const contrast =
+    Number(
+        document
+        .getElementById("contrast")
+        .value
+    );
+
+    const saturation =
+    Number(
+        document
+        .getElementById("saturation")
+        .value
+    );
+
+    const blur =
+    Number(
+        document
+        .getElementById("blur")
+        .value
+    );
+
+    const filter =
+    document
+    .getElementById("filter")
+    .value;
+
+
+    canvas.width =
+    image.width;
+
+    canvas.height =
+    image.height;
+
+
+    ctx.save();
+
+    ctx.translate(
+        canvas.width / 2,
+        canvas.height / 2
+    );
+
+
+    if(flipped){
+        ctx.scale(-1,1);
+    }
+
+
+    ctx.rotate(
+        rotation *
+        Math.PI /
+        180
+    );
+
+
+    ctx.filter =
+    "brightness(" +
+    (100 + brightness) +
+    "%) " +
+
+    "contrast(" +
+    (100 + contrast) +
+    "%) " +
+
+    "saturate(" +
+    (100 + saturation) +
+    "%) " +
+
+    "blur(" +
+    blur +
+    "px) " +
+
+    filter;
+
+
+    ctx.drawImage(
+        image,
+        -image.width/2,
+        -image.height/2
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   UPDATE IMAGE
+========================= */
+
+function updateImage(){
+
+    document
+    .getElementById("brightnessValue")
+    .textContent =
+    document
+    .getElementById("brightness")
+    .value;
+
+    document
+    .getElementById("contrastValue")
+    .textContent =
+    document
+    .getElementById("contrast")
+    .value;
+
+    document
+    .getElementById("saturationValue")
+    .textContent =
+    document
+    .getElementById("saturation")
+    .value;
+
+
+    drawImage();
+
+}
+
+
+/* =========================
+   ROTATE
+========================= */
+
+function rotatePhoto(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    rotation += 90;
+
+    if(rotation >= 360){
+        rotation = 0;
+    }
+
+    drawImage();
+
+    saveHistory();
+
+}
+
+
+/* =========================
+   FLIP
+========================= */
+
+function flipPhoto(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    flipped = !flipped;
+
+    drawImage();
+
+    saveHistory();
+
+}
+
+
+/* =========================
+   ZOOM
+========================= */
+
+function zoomIn(){
+
+    zoom += .1;
+
+    if(zoom > 2){
+        zoom = 2;
+    }
+
+    canvas.style.transform =
+    "scale(" + zoom + ")";
+
+    document
+    .getElementById("zoomText")
+    .textContent =
+    Math.round(zoom*100) + "%";
+
+}
+
+
+function zoomOut(){
+
+    zoom -= .1;
+
+    if(zoom < .5){
+        zoom = .5;
+    }
+
+    canvas.style.transform =
+    "scale(" + zoom + ")";
+
+    document
+    .getElementById("zoomText")
+    .textContent =
+    Math.round(zoom*100) + "%";
+
+}
+
+
+/* =========================
+   VIDEO
+========================= */
+
+function playVideo(){
+
+    if(!video.src){
+
+        showToast("Pehle video upload karein");
+
+        return;
+
+    }
+
+    video.play();
+
+    if(musicURL){
+        musicAudio.play();
+    }
+
+}
+
+
+function pauseVideo(){
+
+    video.pause();
+
+    musicAudio.pause();
+
+}
+
+
+function muteVideo(){
+
+    video.muted =
+    !video.muted;
+
+    showToast(
+        video.muted ?
+        "Original audio muted" :
+        "Original audio on"
+    );
+
+}
+
+
+function changeVolume(){
+
+    video.volume =
+    Number(
+        document
+        .getElementById("videoVolume")
+        .value
+    );
+
+}
+
+
+function changeMusicVolume(){
+
+    musicAudio.volume =
+    Number(
+        document
+        .getElementById("musicVolume")
+        .value
+    );
+
+}
+
+
+function videoTrimInfo(){
+
+    if(!video.src){
+
+        showToast("Pehle video upload karein");
+
+        return;
+
+    }
+
+    showModal(
+        "Video Trim",
+        "Basic trim interface ke liye start aur end time system add kiya ja sakta hai. Final MP4 rendering ke liye FFmpeg/backend ki zarurat hogi."
+    );
+
+}
+
+
+/* =========================
+   AI BUTTONS
+========================= */
+
+function aiEnhance(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    document
+    .getElementById("brightness")
+    .value = 10;
+
+    document
+    .getElementById("contrast")
+    .value = 10;
+
+    document
+    .getElementById("saturation")
+    .value = 8;
+
+    updateImage();
+
+    showToast("Basic AI-style enhancement applied");
+
+}
+
+
+function removeBackground(){
+
+    showModal(
+        "AI Background Remove",
+        "UI ready hai. Real automatic background removal ke liye AI image-processing API/backend connect karna hoga."
+    );
+
+}
+
+
+function objectEraser(){
+
+    showModal(
+        "Object Eraser",
+        "Object Eraser ka button ready hai. Real object detection aur removal ke liye AI API/backend ki zarurat hogi."
+    );
+
+}
+
+
+function aiUpscale(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    showModal(
+        "AI Upscale",
+        "High-quality AI upscaling ke liye dedicated AI image model/API connect karna hoga."
+    );
+
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+function addText(){
+
+    const text =
+    document
+    .getElementById("textInput")
+    .value
+    .trim();
+
+    if(!text){
+
+        showToast("Text likhiye");
+
+        return;
+
+    }
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+
+    ctx.save();
+
+    ctx.font =
+    "bold 60px Arial";
+
+    ctx.fillStyle =
+    "white";
+
+    ctx.strokeStyle =
+    "black";
+
+    ctx.lineWidth = 8;
+
+    ctx.textAlign =
+    "center";
+
+    ctx.strokeText(
+        text,
+        canvas.width/2,
+        canvas.height/2
+    );
+
+    ctx.fillText(
+        text,
+        canvas.width/2,
+        canvas.height/2
+    );
+
+    ctx.restore();
+
+    showToast("Text added");
+
+    saveHistory();
+
+}
+
+
+/* =========================
+   STICKER
+========================= */
+
+function addSticker(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    ctx.save();
+
+    ctx.font =
+    "100px Arial";
+
+    ctx.textAlign =
+    "center";
+
+    ctx.fillText(
+        "❤️",
+        canvas.width/2,
+        canvas.height/2
+    );
+
+    ctx.restore();
+
+    showToast("Sticker added");
+
+    saveHistory();
+
+}
+
+
+/* =========================
+   CANVAS SIZE
+========================= */
+
+function changeCanvasSize(value){
+
+    if(value === "original"){
+
+        if(photoLoaded){
+
+            canvas.width =
+            image.width;
+
+            canvas.height =
+            image.height;
+
+            drawImage();
+
+        }
+
+        return;
+
+    }
+
+
+    let parts =
+    value.split("x");
+
+    canvas.width =
+    Number(parts[0]);
+
+    canvas.height =
+    Number(parts[1]);
+
+    if(photoLoaded){
+
+        ctx.drawImage(
+            image,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    }
+
+    showToast(
+        "Canvas: " + value
+    );
+
+}
+
+
+/* =========================
+   EXPORT
+========================= */
+
+function exportImage(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    const link =
+    document.createElement("a");
+
+    link.download =
+    "photo-ai-editor.png";
+
+    link.href =
+    canvas.toDataURL("image/png");
+
+    link.click();
+
+    showToast("PNG exported");
+
+}
+
+
+function exportJPG(){
+
+    if(!photoLoaded){
+
+        showToast("Pehle photo upload karein");
+
+        return;
+
+    }
+
+    const link =
+    document.createElement("a");
+
+    link.download =
+    "photo-ai-editor.jpg";
+
+    link.href =
+    canvas.toDataURL(
+        "image/jpeg",
+        .92
+    );
+
+    link.click();
+
+    showToast("JPG exported");
+
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function saveHistory(){
+
+    if(!photoLoaded) return;
+
+    try{
+
+        const data =
+        canvas.toDataURL();
+
+        history =
+        history.slice(
+            0,
+            historyIndex + 1
+        );
+
+        history.push(data);
+
+        historyIndex =
+        history.length - 1;
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+
+function undo(){
+
+    if(historyIndex <= 0){
+
+        showToast("Undo available nahi hai");
+
+        return;
+
+    }
+
+    historyIndex--;
+
+    restoreHistory(
+        history[historyIndex]
+    );
+
+}
+
+
+function redo(){
+
+    if(
+        historyIndex >=
+        history.length - 1
+    ){
+
+        showToast("Redo available nahi hai");
+
+        return;
+
+    }
+
+    historyIndex++;
+
+    restoreHistory(
+        history[historyIndex]
+    );
+
+}
+
+
+function restoreHistory(data){
+
+    const temp =
+    new Image();
+
+    temp.onload =
+    function(){
+
+        canvas.width =
+        temp.width;
+
+        canvas.height =
+        temp.height;
+
+        ctx.drawImage(
+            temp,
+            0,
+            0
+        );
+
+    };
+
+    temp.src = data;
+
+}
+
+
+/* =========================
+   MODE
+========================= */
+
+function setMode(mode){
+
+    currentMode =
+    mode;
+
+    if(mode === "photo"){
+
+        canvas.style.display =
+        photoLoaded ?
+        "block" :
+        "none";
+
+        video.style.display =
+        "none";
+
+    }else{
+
+        canvas.style.display =
+        "none";
+
+        video.style.display =
+        video.src ?
+        "block" :
+        "none";
+
+    }
+
+}
+
+
+/* =========================
+   SAVE PROJECT
+========================= */
+
+function saveProject(){
+
+    localStorage.setItem(
+        "photoAIEditorProject",
+        JSON.stringify({
+
+            brightness:
+            document
+            .getElementById("brightness")
+            .value,
+
+            contrast:
+            document
+            .getElementById("contrast")
+            .value,
+
+            saturation:
+            document
+            .getElementById("saturation")
+            .value,
+
+            filter:
+            document
+            .getElementById("filter")
+            .value
+
+        })
+    );
+
+    showToast(
+        "Project settings saved"
+    );
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function showModal(title,text){
+
+    document
+    .getElementById("modalTitle")
+    .textContent =
+    title;
+
+    document
+    .getElementById("modalText")
+    .textContent =
+    text;
+
+    document
+    .getElementById("infoModal")
+    .style.display =
+    "flex";
+
+}
+
+
+function closeModal(){
+
+    document
+    .getElementById("infoModal")
+    .style.display =
+    "none";
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(message){
+
+    const toast =
+    document
+    .getElementById("toast");
+
+    toast.textContent =
+    message;
+
+    toast.style.display =
+    "block";
+
+    setTimeout(
+        function(){
+
+            toast.style.display =
+            "none";
+
+        },
+        2200
+    );
+
+}
+
+
+/* =========================
+   TIME
+========================= */
+
+function formatTime(seconds){
+
+    if(!isFinite(seconds)){
+        return "00:00";
+    }
+
+    let minutes =
+    Math.floor(seconds/60);
+
+    let secs =
+    Math.floor(seconds%60);
+
+    return (
+        String(minutes)
+        .padStart(2,"0")
+        +
+        ":" +
+        String(secs)
+        .padStart(2,"0")
+    );
+
+}
+
+
+/* =========================
+   VIDEO TIMELINE
+========================= */
+
+video.addEventListener(
+    "timeupdate",
+    function(){
+
+        document
+        .getElementById("durationText")
+        .textContent =
+        formatTime(video.currentTime)
+        +
+        " / " +
+        formatTime(video.duration);
+
+    }
+);
+
+
+/* =========================
+   KEYBOARD SHORTCUTS
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.ctrlKey &&
+            e.key.toLowerCase() === "z"
+        ){
+
+            e.preventDefault();
+
+            undo();
+
+        }
+
+        if(
+            e.ctrlKey &&
+            e.key.toLowerCase() === "y"
+        ){
+
+            e.preventDefault();
+
+            redo();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   START
+========================= */
+
+showToast(
+    "Photo AI Editor ready!"
+);
+
+</script>
+
+</body>
+</html>
